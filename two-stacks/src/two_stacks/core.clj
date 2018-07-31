@@ -2,25 +2,29 @@
 (ns two-stacks.core)
 
 ;;slow version
-(def stacks [(atom nil)
-             (atom nil)])
+(def stacks [(atom [])
+             (atom [])])
 
 (defn queue [cmd item]
   (if (= cmd "1")
-    (swap! (first stacks) #(conj % (read-string item)))
-    (do (dotimes [_ (count @(first stacks))]
-          (swap! (second stacks) #(conj % (peek @(first stacks))))
-          (swap! (first stacks) pop))
+    (do (when (seq @(second stacks))
+          (dotimes [_ (count @(second stacks))]
+            (swap! (first stacks) #(conj % (peek @(second stacks))))
+            (swap! (second stacks) pop)))
+
+        ;;enqueue
+        (swap! (first stacks) #(conj % (read-string item))))
+
+    (do (when (seq @(first stacks))
+          (dotimes [_ (count @(first stacks))]
+            (swap! (second stacks) #(conj % (peek @(first stacks))))
+            (swap! (first stacks) pop)))
 
         ;;dequeue
         (case cmd
           "2" (swap! (second stacks) pop)
           "3" (println (peek @(second stacks)))
-          (println "stacks:" stacks))
-
-        (dotimes [_ (count @(second stacks))]
-          (swap! (first stacks) #(conj % (peek @(second stacks))))
-          (swap! (second stacks) pop)))))
+          (println "stacks:" (seq stacks))))))
 
 (defn run []
   (dotimes [_ (read-string (read-line))]
