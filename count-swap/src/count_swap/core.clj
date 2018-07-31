@@ -27,4 +27,4 @@
 (time (count-swap (vec (range 600))))
 (time (count-swap (range 600 0 -1)))
 
-;;Conclusion: aget/aset for Java array are very slow O(N) algorithms.
+;;Conclusion: aget/aset with reflection for Java array are very slow O(N) algorithms.
